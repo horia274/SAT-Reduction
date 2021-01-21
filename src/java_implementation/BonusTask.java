@@ -15,15 +15,10 @@ import java.util.Scanner;
  * writeAnswer             - write the current problem's answer
  */
 public class BonusTask extends Task {
-    // TODO: define necessary variables and/or data structures
     private int numberOfFamilies;
-    private int numberOfRelations;
     private boolean[][] matrixOfRelations;
 
     private int numberOfVariables;
-    private int numberOfClauses;
-    private int sumOfWeights;
-    private List<List<Integer>> clauses;
 
     private int[] prisoners;
 
@@ -36,14 +31,18 @@ public class BonusTask extends Task {
         writeAnswer();
     }
 
+    /**
+     * read the problem input (inFilename) and store the data in the object's attributes
+     * @throws IOException checks input-output errors
+     */
     @Override
     public void readProblemData() throws IOException {
-        // TODO: read the problem input (inFilename) and store the data in the object's attributes
         Scanner scanner = new Scanner(new File(inFilename));
         numberOfFamilies = scanner.nextInt();
-        numberOfRelations = scanner.nextInt();
+        int numberOfRelations = scanner.nextInt();
         matrixOfRelations = new boolean[numberOfFamilies][numberOfFamilies];
 
+        /* compute adjacent matrix of the given graph */
         for (int i = 0; i < numberOfRelations; i++) {
             int firstFamily = scanner.nextInt();
             int secondFamily = scanner.nextInt();
@@ -53,14 +52,18 @@ public class BonusTask extends Task {
         }
     }
 
+    /**
+     * transform the current problem into a SAT problem and write it
+     * (oracleInFilename) in a format understood by the oracle
+     * @throws IOException checks input-output errors
+     */
     @Override
     public void formulateOracleQuestion() throws IOException {
-        // TODO: transform the current problem into a SAT problem and write it (oracleInFilename) in a format
-        //  understood by the oracle
         numberOfVariables = numberOfFamilies;
-        sumOfWeights = numberOfFamilies;
-        clauses = new ArrayList<>();
+        int sumOfWeights = numberOfFamilies;
+        List<List<Integer>> clauses = new ArrayList<>();
 
+        /* clause type 1 - hard one */
         for (int i = 1; i < numberOfFamilies; i++) {
             for (int j = i + 1; j <= numberOfFamilies; j++) {
                 if (matrixOfRelations[i - 1][ j - 1]) {
@@ -74,6 +77,7 @@ public class BonusTask extends Task {
             }
         }
 
+        /* clause type 2 - soft one */
         for (int i = 1; i <= numberOfFamilies; i++) {
             List<Integer> clause = new ArrayList<>();
             clause.add(1);
@@ -82,8 +86,9 @@ public class BonusTask extends Task {
             clauses.add(clause);
         }
 
-        numberOfClauses = clauses.size();
+        int numberOfClauses = clauses.size();
 
+        /* write output */
         PrintStream printStream = new PrintStream(oracleInFilename);
         printStream.println("p wcnf " + numberOfVariables + " " + numberOfClauses + " " + (sumOfWeights + 1));
         for (List<Integer> clause : clauses) {
@@ -95,9 +100,13 @@ public class BonusTask extends Task {
         }
     }
 
+    /**
+     * extract the current problem's answer from the answer
+     * given by the oracle (oracleOutFilename)
+     * @throws IOException checks input-output errors
+     */
     @Override
     public void decipherOracleAnswer() throws IOException {
-        // TODO: extract the current problem's answer from the answer given by the oracle (oracleOutFilename)
         Scanner scanner = new Scanner(new File(oracleOutFilename));
         int counter = 0;
 
