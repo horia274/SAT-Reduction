@@ -17,13 +17,10 @@ import java.util.Scanner;
 public class Task2 extends Task {
     // TODO: define necessary variables and/or data structures
     private int numberOfFamilies;
-    private int numberOfRelations;
     private int dimensionOfClique;
     private boolean[][] matrixOfRelations;
 
     private int numberOfVariables;
-    private int numberOfClauses;
-    private List<List<Integer>> clauses;
 
     private String oracleAnswer;
     private int[] familiesFromClique;
@@ -37,15 +34,20 @@ public class Task2 extends Task {
         writeAnswer();
     }
 
+    /**
+     * read the problem input (inFilename) and store
+     * the data in the object's attributes
+     * @throws IOException checks input-output errors
+     */
     @Override
     public void readProblemData() throws IOException {
-        // TODO: read the problem input (inFilename) and store the data in the object's attributes
         Scanner scanner = new Scanner(new File(inFilename));
         numberOfFamilies = scanner.nextInt();
-        numberOfRelations = scanner.nextInt();
+        int numberOfRelations = scanner.nextInt();
         dimensionOfClique = scanner.nextInt();
         matrixOfRelations = new boolean[numberOfFamilies][numberOfFamilies];
 
+        /* compute adjacent matrix of the given graph */
         for (int i = 0; i < numberOfRelations; i++) {
             int firstFamily = scanner.nextInt();
             int secondFamily = scanner.nextInt();
@@ -55,13 +57,18 @@ public class Task2 extends Task {
         }
     }
 
+    /**
+     * transform the current problem into a SAT problem and write it
+     * (oracleInFilename) in a format understood by the oracle
+     * @throws IOException checks input-output errors
+     */
     @Override
     public void formulateOracleQuestion() throws IOException {
-        // TODO: transform the current problem into a SAT problem and write it (oracleInFilename) in a format
-        //  understood by the oracle
         numberOfVariables = numberOfFamilies * dimensionOfClique;
-        clauses = new ArrayList<>();
+        /* store all clauses to count them easily */
+        List<List<Integer>> clauses = new ArrayList<>();
 
+        /* clause type 1 */
         for (int i = 1; i <= dimensionOfClique; i++) {
             List<Integer> clause = new ArrayList<>();
             for (int j = 1; j <= numberOfFamilies; j++) {
@@ -72,6 +79,7 @@ public class Task2 extends Task {
             clauses.add(clause);
         }
 
+        /* clause type 2 */
         for (int i = 1; i <= numberOfFamilies; i++) {
             for (int j = 1; j < dimensionOfClique; j++) {
                 for (int k = j + 1; k <= dimensionOfClique; k++) {
@@ -86,6 +94,7 @@ public class Task2 extends Task {
             }
         }
 
+        /* clause type 3 */
         for (int i = 1; i < numberOfFamilies; i++) {
             for (int j = i + 1; j <= numberOfFamilies; j++) {
                 if (!matrixOfRelations[i - 1][j - 1]) {
@@ -104,8 +113,9 @@ public class Task2 extends Task {
             }
         }
 
-        numberOfClauses = clauses.size();
+        int numberOfClauses = clauses.size();
 
+        /* write the query for oracle */
         PrintStream printStream = new PrintStream(oracleInFilename);
         printStream.println("p cnf " + numberOfVariables + " " + numberOfClauses);
         for (List<Integer> clause : clauses) {
@@ -117,9 +127,13 @@ public class Task2 extends Task {
         }
     }
 
+    /**
+     * extract the current problem's answer from the answer
+     * given by the oracle (oracleOutFilename)
+     * @throws IOException checks input-output errors
+     */
     @Override
     public void decipherOracleAnswer() throws IOException {
-        // TODO: extract the current problem's answer from the answer given by the oracle (oracleOutFilename)
         Scanner scanner = new Scanner(new File(oracleOutFilename));
 
         oracleAnswer = scanner.nextLine();
@@ -129,22 +143,28 @@ public class Task2 extends Task {
             int counter = 0;
             for (int i = 1; i <= numberOfVariables; i++) {
                 int currentVariable = scanner.nextInt();
+                /* take the positive encoded variables */
                 if (currentVariable > 0) {
                     int family;
+                    /* decode them */
                     if (currentVariable % dimensionOfClique == 0) {
                         family = currentVariable / dimensionOfClique;
                     } else {
                         family = currentVariable / dimensionOfClique + 1;
                     }
+                    /* store the families from clique */
                     familiesFromClique[counter++] = family;
                 }
             }
         }
     }
 
+    /**
+     * write the answer to the current problem (outFilename)
+     * @throws IOException checks input-output errors
+     */
     @Override
     public void writeAnswer() throws IOException {
-        // TODO: write the answer to the current problem (outFilename)
         PrintStream printStream = new PrintStream(outFilename);
 
         printStream.println(oracleAnswer);
