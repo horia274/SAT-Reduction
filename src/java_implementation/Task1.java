@@ -15,7 +15,6 @@ import java.util.Scanner;
  * writeAnswer             - write the current problem's answer
  */
 public class Task1 extends Task {
-    // TODO: define necessary variables and/or data structures
     private int numberOfFamilies;
     private int numberOfRelations;
     private int numberOfSpies;

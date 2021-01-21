@@ -14,7 +14,6 @@ import java.util.Scanner;
 public class Task3 extends Task {
     String task2InFilename;
     String task2OutFilename;
-    // TODO: define necessary variables and/or data structures
     private int numberOfFamilies;
     private int numberOfRelations;
     private boolean[][] matrixOfRelations;
@@ -31,11 +30,10 @@ public class Task3 extends Task {
         task2Solver.addFiles(task2InFilename, oracleInFilename, oracleOutFilename, task2OutFilename);
         readProblemData();
 
-        // TODO: implement a way of successively querying the oracle (using Task2) about various arrest numbers until you
-        //  find the minimum
-
+        /* start with the maximum possible clique */
         maxDimensionOfClique = numberOfFamilies + 1;
         while (!foundMaxClique) {
+            /* continue until a clique is found */
             maxDimensionOfClique--;
             reduceToTask2();
             task2Solver.solve();
@@ -45,15 +43,20 @@ public class Task3 extends Task {
         writeAnswer();
     }
 
+    /**
+     * read the problem input (inFilename) and
+     * store the data in the object's attributes
+     * @throws IOException checks input-output errors
+     */
     @Override
     public void readProblemData() throws IOException {
-        // TODO: read the problem input (inFilename) and store the data in the object's attributes
         Scanner scanner = new Scanner(new File(inFilename));
 
         numberOfFamilies = scanner.nextInt();
         numberOfRelations = scanner.nextInt();
         matrixOfRelations = new boolean[numberOfFamilies][numberOfFamilies];
 
+        /* compute adjacent matrix of the given graph */
         for (int i = 0; i < numberOfRelations; i++) {
             int firstFamily = scanner.nextInt();
             int secondFamily = scanner.nextInt();
@@ -63,9 +66,13 @@ public class Task3 extends Task {
         }
     }
 
+    /**
+     * reduce the current problem to Task2
+     * @throws FileNotFoundException checks input-output errors
+     */
     public void reduceToTask2() throws FileNotFoundException {
-        // TODO: reduce the current problem to Task2
         PrintStream printStream = new PrintStream(task2InFilename);
+        /* create input for task2 with complementary graph */
         int numberOfReversedRelations = numberOfFamilies * (numberOfFamilies - 1) / 2 - numberOfRelations;
         printStream.println(numberOfFamilies + " " + numberOfReversedRelations + " " + maxDimensionOfClique);
         for (int i = 1; i < numberOfFamilies; i++) {
@@ -77,12 +84,17 @@ public class Task3 extends Task {
         }
     }
 
+    /**
+     * extract the current problem's answer from Task2's answer
+     * @throws FileNotFoundException checks input-output errors
+     */
     public void extractAnswerFromTask2() throws FileNotFoundException {
-        // TODO: extract the current problem's answer from Task2's answer
         Scanner scanner = new Scanner(new File(task2OutFilename));
         String answer = scanner.nextLine();
         if (answer.equals("True")) {
+            /* when get positive response, stop the algorithm */
             foundMaxClique = true;
+            /* save the families from clique as innocent ones */
             isInnocent = new boolean[numberOfFamilies];
             for (int i = 0; i < maxDimensionOfClique; i++) {
                 int currentInnocent = scanner.nextInt();
@@ -91,13 +103,17 @@ public class Task3 extends Task {
         }
     }
 
+    /**
+     * write the answer to the current problem (outFilename)
+     * @throws IOException checks input-output errors
+     */
     @Override
     public void writeAnswer() throws IOException {
-        // TODO: write the answer to the current problem (outFilename)
         PrintStream printStream = new PrintStream(outFilename);
         for (int i = 0; i < numberOfFamilies; i++) {
+            /* print guilty families */
             if (!isInnocent[i]) {
-                printStream.print(i + 1 + " ");
+                printStream.print((i + 1) + " ");
             }
         }
     }
