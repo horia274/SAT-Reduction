@@ -1,11 +1,13 @@
 # SAT-Reduction
 
+
 ## Cadru general
 
 In fiecare task este vorba despre un numar de familii mafioate care se pot
 cunoaste intre ele sau nu. Practic este vorba de un graf, unde fiecare varf
 reprezinta o familie, iar muchia dintre doua varfuri sugereaza ca cele doua
 familii se cunosc.
+
 
 ## Task1
 
@@ -24,7 +26,7 @@ problema SAT.
 
 Fie n, numarul de familii (varfuri) si k numarul de spioni (culori). Consider
 variabile boolene de tipul **FiSj**, pentru orice i de la 1 la n si orice j de
-la 1 la k. Variabile FiSj va si setata pe *true*, daca familia i este spionata de
+la 1 la k. Variabila FiSj va fi setata pe *true*, daca familia i este spionata de
 spionul j, altfel va avea valoarea *false*.
 
 #### Necesitati - corespondenta in clauze:
@@ -39,13 +41,13 @@ diferiti j != l, valoarea !(FiSj ^ FiSl) trebuie sa fie *true* - folosind regula
 lui De Morgen, obtinem **clauze de tipul 2**
 *!FiSj v !FiSl*, pentru orice familie i si oricare doi spioni diferiti j si l;
 
-* oricare doua familii care se cunosc, trebuie sa aiba spioni diferiti - oricare
-doua familii diferite, i != j nu pot avea acelasi spion l, deci valoarea expresiei
-!(FiSl ^ FjSl) va fi *true* - se obtin ultimele **clauze de tipul 3** si anume
+* oricare doua familii care se cunosc, trebuie sa aiba spioni diferiti - doua
+familii diferite, i != j nu pot avea acelasi spion l, deci valoarea expresiei
+!(FiSl ^ FjSl) va fi *true* - se obtin ultimele **clauze**, cele de **tipul 3** si anume
 *!FiSl v !FjSl*, pentru orice familii i si j intre care exista muchie si orice
 spion l.
 
-#### Mica explicatie a corectitudinii
+#### Scurta explicatie a corectitudinii
 
 Din modul de constructie a clauzelor, daca problema K coloring intoarce *true*
 pe un input introdus, toate clauzele vor fi adevarate, intrucat reprezinta exact
@@ -74,13 +76,13 @@ afla ce spion va fi introdus in fiecare familie, prin decodificarea variabilelor
 ce au valoarea *true* (sunt pozitive) date de oracol.
 
 
-### Task 2
+## Task 2
 
 ### Identificarea problemei K clique
 
 Trebuie verificat daca exista un grup de k familii astfel incat oricare doua sa se
 cunoasca. Intrucat relatia dintre doua familii este reprezentata la nivelul grafului
-prin trasarea muchiei, problema este echivalenta cu **k clique**.
+prin trasarea muchiei, problema este echivalenta cu **K clique**.
 
 ### Modalitatea de reducere
 
@@ -104,9 +106,9 @@ pozitii din clica j != l, care sa contina aceeasi familie i - **clauzele de tipu
 *!FiPj v !FiPl*, pentru orice familie i si oricare doua pozitii diferite, j si l;
 
 * pentru oricare doua familii care nu se cunosc, acestea nu pot fi simultan in clica
-- pentru orice familii i != j si oricare pozitii din clica l, m (nu neaprat diferite)
-se obtin **clauzele de tipul 3**
-*!FiPl v !FjPm*.
+- pentru orice familii i != j, care nu se cunosc si oricare pozitii din clica l, m
+(nu neaprat diferite) se obtin **clauzele de tipul 3**
+*!FiPl v !FjPm*, (i, j) nefiind muchie in graf.
 
 #### Mica explicatie a corectitudinii
 
@@ -119,14 +121,15 @@ adica daca K clique intoarce *true*.
 
 Formula de encodare pentru variabilele de tipul FiPj este exact ca in cazul anterior
 si anume k * (i - 1) + j. Decodarea este tot in acelasi fel si anume, pentru o
-variabila encodata var, i este catul impartirii lui var la k (la care se adauga 1
-dupa caz) si j este restul.
+variabila encodata *var*, i-ul este catul impartirii lui var la k (la care se adauga 1
+dupa caz) si j-ul este restul.
 
 ### Raspunsul oracolului
 
 Daca obtin *true*, ma intereseaza sa vad care sunt familiile care intra in clica.
 In acest sens, pentru variabilele pozitive, le decodific pentru a afla indicele i
 al familiei, pe care il salvez pentru a forma fisierul de output.
+
 
 ## Task 3
 
@@ -145,6 +148,7 @@ Formez input pentru task-ul 2, adaugand doar, pe langa datele obtinute din input
 dimensiunea clicii k. Obtin apoi rezultatul dat de oracol pentru clica de 
 dimensiune k, iar in cazul obtinerii unui raspuns afirmativ, executia se incheie,
 afland ce variabile se afla in clica. Ulterior, cele care nu se afla vor fi arestati.
+
 
 ## Bonus
 
@@ -177,11 +181,12 @@ acesta poate sa nu fie colorat, asignandu-se un *weight* egal cu 1 (pentru simpl
 calculului) - se obtin clauze de tipul
 *!Fi*, cu pondere de 1.
 
+
 ## Observatii
 
-1. Am lasat special cod duplicat prin clasele ce rezolva task-urile, special pentru
-a se intelege mai usor cum se formeaza clauzele pentru fiecare reducere in parte,
-codul fiind astfel mai usor de citit.
+1. Am lasat cod duplicat prin clasele ce rezolva task-urile, special pentru a se
+intelege mai usor cum se formeaza clauzele pentru fiecare reducere in parte,
+codul fiind astfel mai lizibil.
 
 2. Am preferat sa tin de fiecare data o lista cu toate clauzele, pentru a fi usor de
 numarat la final. Puteam sa hardcodez acest numar, dar din nou, am ales sa fie mai usor
