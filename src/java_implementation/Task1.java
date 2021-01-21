@@ -35,9 +35,13 @@ public class Task1 extends Task {
         writeAnswer();
     }
 
+    /**
+     * read the problem input (inFilename) and store
+     * the data in the object's attributes
+     * @throws IOException checks input-output errors
+     */
     @Override
     public void readProblemData() throws IOException {
-        // TODO: read the problem input (inFilename) and store the data in the object's attributes
         Scanner scanner = new Scanner(new File(inFilename));
 
         numberOfFamilies = scanner.nextInt();
@@ -45,22 +49,29 @@ public class Task1 extends Task {
         numberOfSpies = scanner.nextInt();
         relations = new int[numberOfRelations][2];
 
+        /* keep relation between families in array */
         for (int i = 0; i < numberOfRelations; i++) {
             relations[i][0] = scanner.nextInt();
             relations[i][1] = scanner.nextInt();
         }
     }
 
+    /**
+     * transform the current problem into a SAT problem and write it
+     * (oracleInFilename) in a format understood by the oracle
+     * @throws IOException checks input-output errors
+     */
     @Override
     public void formulateOracleQuestion() throws IOException {
-        // TODO: transform the current problem into a SAT problem and write it (oracleInFilename) in a format
-        //  understood by the oracle
         numberOfVariables = numberOfFamilies * numberOfSpies;
+        /* store all the clauses to finally get the number of them */
         List<List<Integer>> clauses = new ArrayList<>();
 
+        /* clause type 1 (check README) */
         for (int i = 1; i <= numberOfFamilies; i++) {
             List<Integer> clause = new ArrayList<>();
             for (int j = 1; j <= numberOfSpies; j++) {
+                /* encoding variables */
                 int FiSj = numberOfSpies * (i - 1) + j;
                 clause.add(FiSj);
             }
@@ -68,6 +79,7 @@ public class Task1 extends Task {
             clauses.add(clause);
         }
 
+        /* clause type 2 (check README) */
         for (int i = 1; i <= numberOfFamilies; i++) {
             for (int j = 1; j < numberOfSpies; j++) {
                 for (int k = j + 1; k <= numberOfSpies; k++) {
@@ -82,6 +94,7 @@ public class Task1 extends Task {
             }
         }
 
+        /* clause type 3 (check README) */
         for (int m = 0; m < numberOfRelations; m++) {
             int i = relations[m][0];
             int j = relations[m][1];
@@ -98,6 +111,7 @@ public class Task1 extends Task {
 
         int numberOfClauses = clauses.size();
 
+        /* store the result in the output file */
         PrintStream printStream = new PrintStream(oracleInFilename);
         printStream.println("p cnf " + numberOfVariables + " " + numberOfClauses);
         for (List<Integer> clause : clauses) {
@@ -109,9 +123,13 @@ public class Task1 extends Task {
         }
     }
 
+    /**
+     * extract the current problem's answer from the answer
+     * given by the oracle (oracleOutFilename)
+     * @throws IOException checks input-output errors
+     */
     @Override
     public void decipherOracleAnswer() throws IOException {
-        // TODO: extract the current problem's answer from the answer given by the oracle (oracleOutFilename)
         Scanner scanner = new Scanner(new File(oracleOutFilename));
 
         oracleAnswer = scanner.nextLine();
@@ -120,8 +138,10 @@ public class Task1 extends Task {
             numberOfVariables = scanner.nextInt();
             for (int i = 1; i <= numberOfVariables; i++) {
                 int currentVariable = scanner.nextInt();
+                /* check if the current variable is true */
                 if (currentVariable > 0) {
                     int family, spy;
+                    /* decoding variables */
                     if (currentVariable % numberOfSpies == 0) {
                         family = currentVariable / numberOfSpies;
                         spy = numberOfSpies;
@@ -129,15 +149,19 @@ public class Task1 extends Task {
                         family = currentVariable / numberOfSpies + 1;
                         spy = currentVariable % numberOfSpies;
                     }
+                    /* introduce spy at the given family */
                     spiesPerFamily[family - 1] = spy;
                 }
             }
         }
     }
 
+    /**
+     * write the answer to the current problem (outFilename)
+     * @throws IOException checks input-output errors
+     */
     @Override
     public void writeAnswer() throws IOException {
-        // TODO: write the answer to the current problem (outFilename)
         PrintStream printStream = new PrintStream(outFilename);
 
         printStream.println(oracleAnswer);
