@@ -115,14 +115,18 @@ public class BonusTask extends Task {
         for (int i = 0; i < numberOfVariables; i++) {
             int currentVariable = scanner.nextInt();
             if (currentVariable > 0) {
+                /* if current variable is positive, arrest it */
                 prisoners[counter++] = currentVariable;
             }
         }
     }
 
+    /**
+     * write the answer to the current problem (outFilename)
+     * @throws IOException input-output errors
+     */
     @Override
     public void writeAnswer() throws IOException {
-        // TODO: write the answer to the current problem (outFilename)
         PrintStream printStream = new PrintStream(outFilename);
 
         for (int prisoner : prisoners) {
