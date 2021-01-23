@@ -126,8 +126,8 @@ formeaza astfel **clauzele de tipul 1**
 pozitii din clica j != l, care sa contina aceeasi familie i - **clauzele de tipul 2**
 *!FiPj v !FiPl*, pentru orice familie i si oricare doua pozitii diferite, j si l;
 
-* pentru oricare doua familii care nu se cunosc, acestea nu pot fi simultan in clica
-- pentru orice familii i != j, care nu se cunosc si oricare pozitii din clica l, m
+* pentru oricare doua familii care nu se cunosc, acestea nu pot fi simultan in clica -
+pentru orice familii i != j, care nu se cunosc si oricare pozitii din clica l, m
 (nu neaprat diferite) se obtin **clauzele de tipul 3**
 *!FiPl v !FjPm*, (i, j) nefiind muchie in graf.
 
