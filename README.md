@@ -75,6 +75,27 @@ Daca oracolul intoarce *False*, problema nu are solutii, iar daca nu, voi putea
 afla ce spion va fi introdus in fiecare familie, prin decodificarea variabilelor
 ce au valoarea *true* (sunt pozitive) date de oracol.
 
+### Complexitate
+
+#### Temporala
+
+Aceasta este data de functia *formulateOracleQuestion()*, caci ea contine cele mai
+multe for-uri imbricate. Astfel, complexitatea este de tipul *O(nk + nk^2 + mk)*,
+unde n este numarul de varfuri (familii), k este numarul de culori (spioni), m
+este numarul de muchii (relatii dintre familii). Astfel, cum numarul total de
+muchii respecta relatia m <= n(n-1)/2 (acesta e numarul maxim de muchii dintr-un
+graf cu n noduri) si presupunand ca avem input-uri cu k <= n (intrucat nu ne
+intereseaza mai multi spioni decat familii), complexitatea este de **O(n^3)**,
+n fiind numarul de familii.
+
+#### Spatiala
+
+In rezolvarea acestei probleme, sunt folositi doi vectori, unul de dimensiune n
+si inca unul de dimensiune m * 2. Astfel, pentru un graf mai *gol*, cu putine
+muchii, complexitatea va fi **O(n)**, iar pentru unul *incarcat*, cu mai multe
+muchii, se obtine complexitatea de **O(m)**. Daca folosim relatia m <= n(n-1)/2,
+se obtine o complexitate maxima de **O(n^2)**.
+
 
 ## Task 2
 
@@ -130,6 +151,23 @@ Daca obtin *true*, ma intereseaza sa vad care sunt familiile care intra in clica
 In acest sens, pentru variabilele pozitive, le decodific pentru a afla indicele i
 al familiei, pe care il salvez pentru a forma fisierul de output.
 
+### Complexitate
+
+#### Temporala
+
+La fel ca la task-ul precedent, complexitatea temporala este data tot de functia
+*formulateOracleQuestion()* si aceasta va fi de tipul *O(nk + nk^2 + n^2k^2)*,
+unde n reprezinta numarul de varfuri (familii) si k reprezinta dimensiunea clicii.
+Cum clica poate avea o dimensiune maxima egala cu numarul de varfuri, adica k <= n
+si considerand ca input-urile respecta aceasta proprietate, se obine complexitatea
+temporala egala cu **O(n^4)**, n fiind numarul de familii.
+
+#### Spatiala
+
+Din motive de eficienta a timpului, am folosit matricea de adiacenta a grafului.
+Astfel, complexitatea spatiala este de **O(n^2)**, unde n reprezinta numarul de
+familii
+
 
 ## Task 3
 
@@ -137,10 +175,11 @@ al familiei, pe care il salvez pentru a forma fisierul de output.
 
 Luand graful complementar, vreau sa gasesc clica de dimensiune maxima. Arestatii
 vor fi familiile care **nu** se afla in clica. Ca explicatie, daca as face din nou
-graful complementar (cel initial), dupa ce arestez (scot mafiotii din graf) raman
+graful complementar (cel initial), dupa ce arestez / scot mafiotii din graf, raman
 cu familii care nu se cunosc deloc intre ele (intrucat in graful complementar, ele
 formeaza clica, adica se cunosc toti intre ei). Am nevoie de clica cea mai mare
-posibila (dimensiune maxima), intrucat vreau sa elimin toate relatiile dintre ei.
+posibila (dimensiune maxima), intrucat vreau sa elimin toate relatiile dintre aceste
+familii.
 
 ### Folosire Task 2
 
@@ -149,48 +188,87 @@ dimensiunea clicii k. Obtin apoi rezultatul dat de oracol pentru clica de
 dimensiune k, iar in cazul obtinerii unui raspuns afirmativ, executia se incheie,
 afland ce variabile se afla in clica. Ulterior, cele care nu se afla vor fi arestati.
 
+### Complexitate
+
+#### Temporala
+
+Fiecare reducere la task-ul 2 vine cu o complexitate de *O(n^2)* pentru construirea
+inputului, n fiind numarul de familii. Ulterior se aplica metoda *solve()* a task-ului
+2, avand complexitatea de *O(n^4)*, asa cum am demonstrat anterior. Aceasta metoda
+se aplica pana cand se gaseste o clica de o anumita lungime, deci se aplica de maxim
+n ori. Asadar complexitatea temporala totala va fi de **O(n^5)** si se obtine pentru
+un graf complet.
+
+#### Spatiala
+
+Specific acestui task, este doar matricea de adiacenta folosita, care ocupa *O(n^2)*
+spatiu. In schimb, la fiecare apel al functiei *solve()* a task-ului 2, se foloseste
+inca *O(n^2)* memorie. Astfel ca se poate folosi maxim **O(n^3)** spatiu. 
+
 
 ## Bonus
 
 ### Identificarea problemei Vertex Cover
 
-Vrem sa identificam familiile (numarul minim de familii) care daca le scoatem din
+Vrem sa identificam familiile (numarul minim de familii) pe care, daca le scoatem din
 graf sa nu mai exista relatii intre familiile ramase. Cu alte cuvinte, daca acoperim
-/ coloram cu o culoare o parte din varfurile (familiile) din graf, toate muchiile sa
-fie acoperite (in sensul ca atunci cand eliminam muchiile acoperite, nu mai ramane
-niciuna). Muchie acoperita inseamna ca macar un nod este acoperit. Astfel, arestam
-familiile care reprezinta raspunsul problemei **Vertex Cover**.
+o parte din varfurile (familiile) din graf, toate muchiile sa fie acoperite (in
+sensul ca atunci cand eliminam muchiile acoperite, nu mai ramane niciuna). Muchie
+acoperita inseamna ca macar un nod este acoperit. Astfel, arestam familiile care
+reprezinta raspunsul problemei **Vertex Cover**.
 
 ### Encodare / Decodare
 
 In cadrul acestui task, nici macar nu este nevoie de o encodare, intrucat variabilele
-folosite sunt varfurile din graf / indicii familiilor. Astfel, pentru explicatii
+folosite sunt varfurile din graf / indicii familiilor. Astfel, pentru explicatii,
 folosesc variabile de tipul Fi care au valoarea *true* daca si numai data familia i
-este acoperita / colorata.
+este acoperita.
 
 ### Modalitatea de reducere
 
 #### Necesitati - corespondenta in clauze:
 
-* pentru fiecare muchie, cel putin unul din fiecare varf ce formeaza aceassta muchie
+* pentru fiecare muchie, cel putin unul din fiecare varf ce formeaza aceasta muchie
 trebuie acoperit - **clauzele de tipul 1, cele obligatorii**, sunt
 *Fi v Fj*, cu pondere de *sumOfWeights* + 1;
 
-* pentru fiecare varf, se introduce o **clauza de tipul 2, cele soft**, in sensul ca
-acesta poate sa nu fie colorat, asignandu-se un *weight* egal cu 1 (pentru simplitatea
+* pentru fiecare varf, se introduce o **clauza de tipul 2, soft**, in sensul ca acesta
+poate sa nu fie acoperit, asignandu-se un *weight* egal cu 1 (pentru simplitatea
 calculului) - se obtin clauze de tipul
 *!Fi*, cu pondere de 1.
+
+### Raspunsul oracolului
+
+Oracolul va afisa variabilele pozitive, cele care au valoarea *true*, adica cele care
+trebuie acoperite pentru a acoperi tot graful. Astfel, aceste variabile vor fi
+interpretate ca familiile arestate.
+
+### Complexitate
+
+#### Temporala
+
+Instructiunile repetitive folosite in cadrul acestui cadru, au un numar de n si
+respectiv m repetari, unde n este numarul de noduri / familii, iar m este numarul de
+muchii / relatii. Astfel se obtine o complexitate de **O(max(m, n))**, iar daca tinem
+cont de relatia m <= n(n-1)/2, complexitatea temporala maxima este **O(n^2)**.
+
+#### Spatiala
+
+In rezolvarea acestei probleme, sunt folositi doi vectori, unul de dimensiune maxim
+n si inca unul de dimensiune m * 2. Astfel, pentru un graf mai *gol*, cu putine
+muchii, complexitatea va fi **O(n)**, iar pentru unul *incarcat*, cu mai multe
+muchii, se obtine complexitatea de **O(m)**. Punem combina cele doua rezultate,
+folosind relatia m <= n(n-1)/2 si obtine o complexitate de **O(n^2)**.
 
 
 ## Observatii
 
 1. Am lasat cod duplicat prin clasele ce rezolva task-urile, special pentru a se
-intelege mai usor cum se formeaza clauzele pentru fiecare reducere in parte,
-codul fiind astfel mai lizibil.
+intelege mai bine cum se formeaza clauzele pentru fiecare reducere in parte, codul
+fiind mai usor de parcurs.
 
-2. Am preferat sa tin de fiecare data o lista cu toate clauzele, pentru a fi usor de
-numarat la final. Puteam sa hardcodez acest numar, dar din nou, am ales sa fie mai usor
-de inteles (spre exemplu pentru *Task1*, numarul de clauze este 
-*n + nk(k-1)/2 + mk*, unde n este numarul de familii, k este numarul de spioni si m
-este numarul de relatii dintre familiile implicate).
+2. Am calculat de fiecare data numarul clauzelor cu ajutorul unor formule matematice
+usor de vazut, tocmai pentru a nu fi nevoit sa tin o lista a tututor clauzelor, fapt
+ce ar fi consumat enorm de multa memorie, in mod inutil.
+
 
