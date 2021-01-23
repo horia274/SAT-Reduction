@@ -2,8 +2,6 @@
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -16,6 +14,7 @@ import java.util.Scanner;
  */
 public class Task2 extends Task {
     private int numberOfFamilies;
+    private int numberOfRelations;
     private int dimensionOfClique;
     private boolean[][] matrixOfRelations;
 
@@ -42,7 +41,7 @@ public class Task2 extends Task {
     public void readProblemData() throws IOException {
         Scanner scanner = new Scanner(new File(inFilename));
         numberOfFamilies = scanner.nextInt();
-        int numberOfRelations = scanner.nextInt();
+        numberOfRelations = scanner.nextInt();
         dimensionOfClique = scanner.nextInt();
         matrixOfRelations = new boolean[numberOfFamilies][numberOfFamilies];
 
@@ -63,32 +62,35 @@ public class Task2 extends Task {
      */
     @Override
     public void formulateOracleQuestion() throws IOException {
+        PrintStream printStream = new PrintStream(oracleInFilename);
+
+        /* compute number of variables */
         numberOfVariables = numberOfFamilies * dimensionOfClique;
-        /* store all clauses to count them easily */
-        List<List<Integer>> clauses = new ArrayList<>();
+        /* compute number of clauses */
+        int numberOfClauses = dimensionOfClique
+                + numberOfFamilies * dimensionOfClique * (dimensionOfClique - 1) / 2
+                + (numberOfFamilies * (numberOfFamilies - 1) - numberOfRelations)
+                * dimensionOfClique * dimensionOfClique;
+
+        printStream.println("p cnf " + numberOfVariables + " " + numberOfClauses);
 
         /* clause type 1 */
         for (int i = 1; i <= dimensionOfClique; i++) {
-            List<Integer> clause = new ArrayList<>();
             for (int j = 1; j <= numberOfFamilies; j++) {
+                /* encoding variables */
                 int FjPi = dimensionOfClique * (j - 1) + i;
-                clause.add(FjPi);
+                printStream.print(FjPi + " ");
             }
-            clause.add(0);
-            clauses.add(clause);
+            printStream.println(0);
         }
 
         /* clause type 2 */
         for (int i = 1; i <= numberOfFamilies; i++) {
             for (int j = 1; j < dimensionOfClique; j++) {
                 for (int k = j + 1; k <= dimensionOfClique; k++) {
-                    List<Integer> clause = new ArrayList<>();
                     int FiPj = dimensionOfClique * (i - 1) + j;
                     int FiPk = dimensionOfClique * (i - 1) + k;
-                    clause.add(-FiPj);
-                    clause.add(-FiPk);
-                    clause.add(0);
-                    clauses.add(clause);
+                    printStream.println(-FiPj + " " + -FiPk + " " + 0);
                 }
             }
         }
@@ -99,30 +101,13 @@ public class Task2 extends Task {
                 if (!matrixOfRelations[i - 1][j - 1]) {
                     for (int k = 1; k <= dimensionOfClique; k++) {
                         for (int l = 1; l <= dimensionOfClique; l++) {
-                            List<Integer> clause = new ArrayList<>();
                             int FiPk = dimensionOfClique * (i - 1) + k;
                             int FjPl = dimensionOfClique * (j - 1) + l;
-                            clause.add(-FiPk);
-                            clause.add(-FjPl);
-                            clause.add(0);
-                            clauses.add(clause);
+                            printStream.println(-FiPk + " " + -FjPl + " " + 0);
                         }
                     }
                 }
             }
-        }
-
-        int numberOfClauses = clauses.size();
-
-        /* write the query for oracle */
-        PrintStream printStream = new PrintStream(oracleInFilename);
-        printStream.println("p cnf " + numberOfVariables + " " + numberOfClauses);
-        for (List<Integer> clause : clauses) {
-            StringBuilder stringBuilder = new StringBuilder();
-            for (int variable : clause) {
-                stringBuilder.append(variable).append(" ");
-            }
-            printStream.println(stringBuilder.toString());
         }
     }
 
@@ -169,6 +154,7 @@ public class Task2 extends Task {
         printStream.println(oracleAnswer);
         if (oracleAnswer.equals("True")) {
             StringBuilder stringBuilder = new StringBuilder();
+            /* print families from clique */
             for (int i = 0; i < dimensionOfClique; i++) {
                 stringBuilder.append(familiesFromClique[i]).append(" ");
             }

@@ -2,8 +2,6 @@
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -62,33 +60,34 @@ public class Task1 extends Task {
      */
     @Override
     public void formulateOracleQuestion() throws IOException {
+        PrintStream printStream = new PrintStream(oracleInFilename);
+
+        /* compute number of variables */
         numberOfVariables = numberOfFamilies * numberOfSpies;
-        /* store all the clauses to finally get the number of them */
-        List<List<Integer>> clauses = new ArrayList<>();
+        /* compute number of clauses */
+        int numberOfClauses = numberOfFamilies
+                + numberOfFamilies * numberOfSpies * (numberOfSpies - 1) / 2
+                + numberOfRelations * numberOfFamilies;
+
+        printStream.println("p cnf " + numberOfVariables + " " + numberOfClauses);
 
         /* clause type 1 (check README) */
         for (int i = 1; i <= numberOfFamilies; i++) {
-            List<Integer> clause = new ArrayList<>();
             for (int j = 1; j <= numberOfSpies; j++) {
                 /* encoding variables */
                 int FiSj = numberOfSpies * (i - 1) + j;
-                clause.add(FiSj);
+                printStream.print(FiSj + " ");
             }
-            clause.add(0);
-            clauses.add(clause);
+            printStream.println(0);
         }
 
         /* clause type 2 (check README) */
         for (int i = 1; i <= numberOfFamilies; i++) {
             for (int j = 1; j < numberOfSpies; j++) {
                 for (int k = j + 1; k <= numberOfSpies; k++) {
-                    List<Integer> clause = new ArrayList<>();
                     int FiSj = numberOfSpies * (i - 1) + j;
                     int FiSk = numberOfSpies * (i - 1) + k;
-                    clause.add(-FiSj);
-                    clause.add(-FiSk);
-                    clause.add(0);
-                    clauses.add(clause);
+                    printStream.println(-FiSj + " " + -FiSk + " " + 0);
                 }
             }
         }
@@ -98,27 +97,10 @@ public class Task1 extends Task {
             int i = relations[m][0];
             int j = relations[m][1];
             for (int k = 1; k <= numberOfSpies; k++) {
-                List<Integer> clause = new ArrayList<>();
                 int FiSk = numberOfSpies * (i - 1) + k;
                 int FjSk = numberOfSpies * (j - 1) + k;
-                clause.add(-FiSk);
-                clause.add(-FjSk);
-                clause.add(0);
-                clauses.add(clause);
+                printStream.println(-FiSk + " " + -FjSk + " " + 0);
             }
-        }
-
-        int numberOfClauses = clauses.size();
-
-        /* store the result in the output file */
-        PrintStream printStream = new PrintStream(oracleInFilename);
-        printStream.println("p cnf " + numberOfVariables + " " + numberOfClauses);
-        for (List<Integer> clause : clauses) {
-            StringBuilder stringBuilder = new StringBuilder();
-            for (int variable : clause) {
-                stringBuilder.append(variable).append(" ");
-            }
-            printStream.println(stringBuilder.toString());
         }
     }
 
@@ -166,6 +148,7 @@ public class Task1 extends Task {
         printStream.println(oracleAnswer);
         if (oracleAnswer.equals("True")) {
             StringBuilder stringBuilder = new StringBuilder();
+            /* print prisoner for each family */
             for (int i = 0; i < numberOfFamilies; i++) {
                 stringBuilder.append(spiesPerFamily[i]).append(" ");
             }

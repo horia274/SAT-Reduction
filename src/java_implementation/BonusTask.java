@@ -2,8 +2,6 @@
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -16,7 +14,8 @@ import java.util.Scanner;
  */
 public class BonusTask extends Task {
     private int numberOfFamilies;
-    private boolean[][] matrixOfRelations;
+    private int numberOfRelations;
+    private int[][] relations;
 
     private int numberOfVariables;
 
@@ -38,17 +37,15 @@ public class BonusTask extends Task {
     @Override
     public void readProblemData() throws IOException {
         Scanner scanner = new Scanner(new File(inFilename));
+
         numberOfFamilies = scanner.nextInt();
-        int numberOfRelations = scanner.nextInt();
-        matrixOfRelations = new boolean[numberOfFamilies][numberOfFamilies];
+        numberOfRelations = scanner.nextInt();
+        relations = new int[numberOfRelations][2];
 
-        /* compute adjacent matrix of the given graph */
+        /* keep relation between families in array */
         for (int i = 0; i < numberOfRelations; i++) {
-            int firstFamily = scanner.nextInt();
-            int secondFamily = scanner.nextInt();
-
-            matrixOfRelations[firstFamily - 1][secondFamily - 1] = true;
-            matrixOfRelations[secondFamily - 1][firstFamily - 1] = true;
+            relations[i][0] = scanner.nextInt();
+            relations[i][1] = scanner.nextInt();
         }
     }
 
@@ -59,44 +56,28 @@ public class BonusTask extends Task {
      */
     @Override
     public void formulateOracleQuestion() throws IOException {
+        PrintStream printStream = new PrintStream(oracleInFilename);
+
+        /* compute number of variables */
         numberOfVariables = numberOfFamilies;
+        /* compute number of clauses */
+        int numberOfClauses = numberOfRelations + numberOfFamilies;
+        /* compute sum of assigned weights */
         int sumOfWeights = numberOfFamilies;
-        List<List<Integer>> clauses = new ArrayList<>();
+
+        printStream.println("p wcnf " + numberOfVariables + " "
+                + numberOfClauses + " " + (sumOfWeights + 1));
 
         /* clause type 1 - hard one */
-        for (int i = 1; i < numberOfFamilies; i++) {
-            for (int j = i + 1; j <= numberOfFamilies; j++) {
-                if (matrixOfRelations[i - 1][ j - 1]) {
-                    List<Integer> clause = new ArrayList<>();
-                    clause.add(sumOfWeights + 1);
-                    clause.add(i);
-                    clause.add(j);
-                    clause.add(0);
-                    clauses.add(clause);
-                }
-            }
+        for (int k = 0; k < numberOfRelations; k++) {
+            int Fi = relations[k][0];
+            int Fj = relations[k][1];
+            printStream.println((sumOfWeights + 1) + " " + Fi + " " + Fj + " " + 0);
         }
 
         /* clause type 2 - soft one */
         for (int i = 1; i <= numberOfFamilies; i++) {
-            List<Integer> clause = new ArrayList<>();
-            clause.add(1);
-            clause.add(-i);
-            clause.add(0);
-            clauses.add(clause);
-        }
-
-        int numberOfClauses = clauses.size();
-
-        /* write output */
-        PrintStream printStream = new PrintStream(oracleInFilename);
-        printStream.println("p wcnf " + numberOfVariables + " " + numberOfClauses + " " + (sumOfWeights + 1));
-        for (List<Integer> clause : clauses) {
-            StringBuilder stringBuilder = new StringBuilder();
-            for (int variable : clause) {
-                stringBuilder.append(variable).append(" ");
-            }
-            printStream.println(stringBuilder.toString());
+            printStream.println(1 + " " + -i + " " + 0);
         }
     }
 
@@ -129,6 +110,7 @@ public class BonusTask extends Task {
     public void writeAnswer() throws IOException {
         PrintStream printStream = new PrintStream(outFilename);
 
+        /* print prisoners */
         for (int prisoner : prisoners) {
             printStream.print(prisoner + " ");
         }

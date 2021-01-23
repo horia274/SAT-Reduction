@@ -72,9 +72,14 @@ public class Task3 extends Task {
      */
     public void reduceToTask2() throws FileNotFoundException {
         PrintStream printStream = new PrintStream(task2InFilename);
+
         /* create input for task2 with complementary graph */
-        int numberOfReversedRelations = numberOfFamilies * (numberOfFamilies - 1) / 2 - numberOfRelations;
-        printStream.println(numberOfFamilies + " " + numberOfReversedRelations + " " + maxDimensionOfClique);
+        int numberOfReversedRelations = numberOfFamilies
+                * (numberOfFamilies - 1) / 2 - numberOfRelations;
+
+        printStream.println(numberOfFamilies + " " + numberOfReversedRelations
+                + " " + maxDimensionOfClique);
+
         for (int i = 1; i < numberOfFamilies; i++) {
             for (int j = i + 1; j <= numberOfFamilies; j++) {
                 if (!matrixOfRelations[i - 1][j - 1]) {
