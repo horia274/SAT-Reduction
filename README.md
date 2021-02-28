@@ -4,7 +4,8 @@
 
 Implementarea propriu-zisa a acestui proiect este reprezentata de sursele *java*,
 cele de *python* reprezinta checker-ul care valideaza corectitudinea solutiilor
-fiecarui task.
+fiecarui task si un program care stie sa rezolve problema **satisfiabilitatii, SAT**,
+(SAT-solver).
 
 Ne propunem sa reducem cateva probleme din clasa **NP-complete** la problema **SAT**.
 Mai multe delatii despre enunt se gasesc [aici](https://curs.upb.ro/pluginfile.php/508188/mod_resource/content/1/AA___Tema_2__Copy_%20%284%29.pdf).
